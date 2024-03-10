@@ -33,9 +33,9 @@ def data_processing(trees_data):
     trees_data_clean = []
     id_counter = 0
     for i, arbre_data in enumerate(trees_data):
-        if arbre_data['codegenre'] not in [0, 1] and (
+        if arbre_data['codegenre'] not in ['0', '1'] and (
                 arbre_data['anneeplantation'] == '' or int(arbre_data['anneeplantation']) >= 1900):
-            arbre_data_clean = {
+            trees_data_clean.append({
                 'circumference': None if arbre_data['circonference_cm'] in ['0', ''] else int(
                     arbre_data['circonference_cm']),
                 'height': None if arbre_data['hauteurtotale_m'] in ['0', ''] else int(
@@ -51,10 +51,9 @@ def data_processing(trees_data):
                 'longitude': float(arbre_data['lon'].replace(',', '.')),
                 'latitude': float(arbre_data['lat'].replace(',', '.')),
                 'identifier': id_counter
-            }
+            })
 
             id_counter += 1
-            trees_data_clean.append(arbre_data_clean)
 
     return trees_data_clean
 
