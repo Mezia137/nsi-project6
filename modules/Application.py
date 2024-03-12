@@ -1,5 +1,6 @@
 import sqlite3
 import folium
+import os
 import webbrowser
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +9,7 @@ from statistics import mean
 
 
 # Function to create a map with markers
-def create_map(data=None, path='./templates/map.html', location=(45.7578, 4.8351), zoom=12,
+def create_map(data=None, path='./templates/map.html', location=None, zoom=12,
                icon_path="./static/icons/tree-icon.png"):
     """
     Create a map with markers from the given data and save it to the specified path.
@@ -23,6 +24,20 @@ def create_map(data=None, path='./templates/map.html', location=(45.7578, 4.8351
     Returns:
         str: Path to the saved map HTML file.
     """
+    # Extract the folder path from the given 'path'
+    folder_path = "/".join(path.split('/')[:-1])
+
+    # Check if the folder path does not exist
+    if not os.path.exists(folder_path):
+        # If it doesn't exist, create the folder and all its parent directories
+        os.makedirs(folder_path)
+
+    # If 'location' to the mean latitude and longitude from the 'data' list if it is not provided
+    if location is None:
+        mean_latitude = mean([marker[0] for marker in data])
+        mean_longitude = mean([marker[1] for marker in data])
+        location = (mean_latitude, mean_longitude)
+
     # Create a Folium map object
     m = folium.Map(location=location, zoom_start=zoom, attr='© Contributors OpenStreetMap')
 
@@ -122,8 +137,8 @@ def application(defaultgenus="Cercis"):
         # Check if number of markers exceeds a threshold and show warning popup if necessary
         if len(markers) < 1000 or popup_warning(len(markers)):
             # Open web browser with the map
-            webbrowser.open(create_map(data=markers, location=(
-                mean([marker[0] for marker in markers]), mean([marker[1] for marker in markers]))))
+            webbrowser.open(create_map(data=markers))  # , location=(
+            # mean([marker[0] for marker in markers]), mean([marker[1] for marker in markers]))))
         return genus
 
     # Function to retrieve info and destroy the app window
